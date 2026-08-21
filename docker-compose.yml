@@ -1,0 +1,126 @@
+services:
+
+  # ==========================================
+  # Product Laravel Service (:8003)
+  # ==========================================
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8003:8000"
+
+    volumes:
+      - .:/var/www/html
+      - product-vendor:/var/www/html/vendor
+
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+      product-redis:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - product-network
+      - product-smartpos-network
+
+  # ==========================================
+  # Product MySQL (:3309 -> :3306)
+  # ==========================================
+  product-mysql:
+    image: mysql:8.4
+
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-smartpos_product}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+
+    ports:
+      - "3309:3306"
+
+    volumes:
+      - product-mysql-data:/var/lib/mysql
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-root}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+    networks:
+      product-network:
+        aliases:
+          - mysql
+
+  # ==========================================
+  # Product Redis (:6382 -> :6379)
+  # ==========================================
+  product-redis:
+    image: redis:8-alpine
+
+    ports:
+      - "6382:6379"
+
+    volumes:
+      - product-redis-data:/data
+
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+    restart: unless-stopped
+
+    networks:
+      product-network:
+        aliases:
+          - redis
+
+  # ==========================================
+  # Product phpMyAdmin (:8083 -> :80)
+  # ==========================================
+  product-phpmyadmin:
+    image: phpmyadmin:5
+
+    ports:
+      - "8083:80"
+
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - product-network
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  product-network:
+    driver: bridge
+
+  product-smartpos-network:
+    name: smartpos-network
+    external: true
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  product-mysql-data:
+  product-redis-data:
+  product-vendor:
