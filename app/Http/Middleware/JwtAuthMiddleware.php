@@ -69,18 +69,56 @@ class JwtAuthMiddleware
 
         [$headerB64, $payloadB64, $sigB64] = $parts;
 
-        $secret = config('jwt.secret');
-
-        if (! $secret) {
+        // Decode and validate header
+        $headerJson = $this->base64UrlDecode($headerB64);
+        if (! $headerJson) {
             return null;
         }
 
-        // Verify signature
-        $expectedSig = $this->base64UrlEncode(
-            hash_hmac('sha256', "$headerB64.$payloadB64", $secret, true)
-        );
+        $header = json_decode($headerJson, true);
+        if (! is_array($header) || empty($header['alg'])) {
+            return null;
+        }
 
-        if (! hash_equals($expectedSig, $sigB64)) {
+        $tokenAlgo = strtoupper((string) $header['alg']);
+        if ($tokenAlgo === 'NONE') {
+            return null;
+        }
+
+        $publicKey = config('jwt.public_key');
+        if (is_string($publicKey) && str_starts_with($publicKey, 'file://')) {
+            $keyPath = substr($publicKey, 7);
+            if (! str_starts_with($keyPath, '/') && function_exists('base_path')) {
+                $keyPath = base_path($keyPath);
+            }
+            $publicKey = file_exists($keyPath) ? file_get_contents($keyPath) : null;
+        }
+
+        $secret = config('jwt.secret');
+
+        $isVerified = false;
+
+        // Asymmetric Verification (RS256, RS384, RS512)
+        if (in_array($tokenAlgo, ['RS256', 'RS384', 'RS512'], true) && ! empty($publicKey)) {
+            $algoMap = [
+                'RS256' => OPENSSL_ALGO_SHA256,
+                'RS384' => OPENSSL_ALGO_SHA384,
+                'RS512' => OPENSSL_ALGO_SHA512,
+            ];
+            $openSslAlgo = $algoMap[$tokenAlgo] ?? OPENSSL_ALGO_SHA256;
+            $rawSig = $this->base64UrlDecode($sigB64);
+            if ($rawSig !== null && $rawSig !== false) {
+                $isVerified = @openssl_verify("$headerB64.$payloadB64", $rawSig, $publicKey, $openSslAlgo) === 1;
+            }
+        } elseif ($tokenAlgo === 'HS256' && ! empty($secret)) {
+            // Symmetric HMAC Verification
+            $expectedSig = $this->base64UrlEncode(
+                hash_hmac('sha256', "$headerB64.$payloadB64", $secret, true)
+            );
+            $isVerified = hash_equals($expectedSig, $sigB64);
+        }
+
+        if (! $isVerified) {
             return null;
         }
 

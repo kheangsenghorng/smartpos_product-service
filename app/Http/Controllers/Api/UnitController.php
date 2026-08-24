@@ -37,7 +37,8 @@ class UnitController extends Controller
             $query->where('is_active', filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN));
         }
 
-        $units = $query->orderBy('name')->paginate($request->input('per_page', 50));
+        $perPage = min(max((int) $request->input('per_page', 50), 1), 100);
+        $units = $query->orderBy('name')->paginate($perPage);
 
         return response()->json([
             'success' => true,

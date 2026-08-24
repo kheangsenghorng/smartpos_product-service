@@ -68,8 +68,7 @@ class JwtAuthMiddlewareTest extends TestCase
 
     public function test_accepts_valid_token_and_sets_attributes(): void
     {
-        $secret = config('jwt.secret');
-        $header = rtrim(strtr(base64_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256'])), '+/', '-_'), '=');
+        $header = rtrim(strtr(base64_encode(json_encode(['typ' => 'JWT', 'alg' => 'RS256'])), '+/', '-_'), '=');
         $payloadData = [
             'iss' => 'smartpos-auth-service',
             'sub' => 'user-123',
@@ -80,7 +79,9 @@ class JwtAuthMiddlewareTest extends TestCase
             'exp' => time() + 3600,
         ];
         $payload = rtrim(strtr(base64_encode(json_encode($payloadData)), '+/', '-_'), '=');
-        $sig = rtrim(strtr(base64_encode(hash_hmac('sha256', "$header.$payload", $secret, true)), '+/', '-_'), '=');
+        $sigBinary = '';
+        openssl_sign("$header.$payload", $sigBinary, static::$testPrivateKey, OPENSSL_ALGO_SHA256);
+        $sig = rtrim(strtr(base64_encode($sigBinary), '+/', '-_'), '=');
 
         $token = "$header.$payload.$sig";
 

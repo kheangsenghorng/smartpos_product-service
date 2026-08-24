@@ -59,9 +59,10 @@ class CategoryController extends Controller
             ]);
         }
 
+        $perPage = min(max((int) $request->input('per_page', 20), 1), 100);
         $categories = $query->with('parent')
             ->orderBy('sort_order')
-            ->paginate($request->input('per_page', 20));
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,

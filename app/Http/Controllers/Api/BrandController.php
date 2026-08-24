@@ -50,7 +50,8 @@ class BrandController extends Controller
             $query->where('is_active', filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN));
         }
 
-        $brands = $query->latest('id')->paginate($request->input('per_page', 20));
+        $perPage = min(max((int) $request->input('per_page', 20), 1), 100);
+        $brands = $query->latest('id')->paginate($perPage);
 
         return response()->json([
             'success' => true,

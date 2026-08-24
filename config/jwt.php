@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'secret' => env('JWT_SECRET', 'smartpos_jwt_super_secure_shared_secret_2026_key'),
-    'algo' => env('JWT_ALGO', 'HS256'),
-    'public_key' => env('JWT_PUBLIC_KEY', null),
+    'secret' => env('JWT_SECRET', null),
+    'algo' => env('JWT_ALGO', 'RS256'),
+    'public_key' => env('JWT_PUBLIC_KEY') ?: (file_exists(storage_path('certs/jwt-public.pem')) ? 'file://' . storage_path('certs/jwt-public.pem') : null),
     'leeway' => (int) env('JWT_LEEWAY', 60),
     'issuer' => env('JWT_ISSUER', 'smartpos-auth-service'),
     'verify_issuer' => env('JWT_VERIFY_ISSUER', false),

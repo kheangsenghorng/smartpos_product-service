@@ -8,8 +8,42 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeadersMiddleware
 {
+    /**
+     * Known automated vulnerability scanner and attack tool User-Agent signatures.
+     */
+    protected array $blockedUserAgents = [
+        'sqlmap',
+        'nikto',
+        'acunetix',
+        'w3af',
+        'havij',
+        'dirbuster',
+        'gobuster',
+        'nmap',
+        'masscan',
+        'zgrab',
+        'hydra',
+        'metasploit',
+        'morfeus',
+        'nessus',
+        'arachni',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
+        $userAgent = strtolower($request->userAgent() ?? '');
+
+        if (!empty($userAgent)) {
+            foreach ($this->blockedUserAgents as $signature) {
+                if (str_contains($userAgent, $signature)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied.',
+                    ], Response::HTTP_FORBIDDEN);
+                }
+            }
+        }
+
         $response = $next($request);
 
         $response->headers->remove('X-Powered-By');

@@ -27,4 +27,33 @@ class SecurityHeadersAndThrottlingTest extends TestCase
             'message' => 'Unauthenticated.',
         ]);
     }
+
+    public function test_blocks_known_malicious_scanner_user_agents(): void
+    {
+        $blockedScanners = ['sqlmap/1.5.2', 'nikto/2.1.6', 'gobuster/3.1.0', 'masscan/1.0', 'dirbuster'];
+
+        foreach ($blockedScanners as $scanner) {
+            $response = $this->withHeaders([
+                'User-Agent' => $scanner,
+            ])->getJson('/api/health');
+
+            $response->assertStatus(403);
+            $response->assertJson([
+                'success' => false,
+                'message' => 'Access denied.',
+            ]);
+        }
+    }
+
+    public function test_allows_legitimate_client_user_agents(): void
+    {
+        $response = $this->withHeaders([
+            'User-Agent' => 'SmartPOS-Client/1.0 (Mobile POS)',
+        ])->getJson('/api/health');
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'healthy',
+        ]);
+    }
 }

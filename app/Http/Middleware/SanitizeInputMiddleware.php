@@ -14,8 +14,9 @@ class SanitizeInputMiddleware
         array_walk_recursive($input, function (&$value) {
             if (is_string($value)) {
                 $value = trim($value);
-                // Strip dangerous script tags while keeping standard text/descriptions
-                $value = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);
+
+                // Strip all HTML tags (prevents <script>, <img onerror>, <svg onload>, <iframe>, etc.)
+                $value = strip_tags($value);
             }
         });
         $request->merge($input);

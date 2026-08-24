@@ -11,6 +11,28 @@ abstract class TestCase extends BaseTestCase
 {
     use LazilyRefreshDatabase;
 
+    protected static ?string $testPrivateKey = null;
+    protected static ?string $testPublicKey = null;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (static::$testPrivateKey === null) {
+            $res = openssl_pkey_new([
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA,
+            ]);
+            $priv = '';
+            openssl_pkey_export($res, $priv);
+            static::$testPrivateKey = $priv;
+            $details = openssl_pkey_get_details($res);
+            static::$testPublicKey = $details['key'];
+        }
+
+        config(['jwt.public_key' => static::$testPublicKey]);
+    }
+
     /**
      * Generate a test JWT token for authentication in tests.
      */
@@ -33,7 +55,7 @@ abstract class TestCase extends BaseTestCase
             'exp' => time() + 3600,
         ];
 
-        return JWT::encode($payload, config('jwt.secret'), config('jwt.algo', 'HS256'));
+        return JWT::encode($payload, static::$testPrivateKey, 'RS256');
     }
 
     /**
