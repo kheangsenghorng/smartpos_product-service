@@ -32,6 +32,9 @@ class Unit extends Model
             if (empty($unit->uuid)) {
                 $unit->uuid = (string) Str::uuid();
             }
+            if (is_null($unit->is_active)) {
+                $unit->is_active = true;
+            }
         });
     }
 

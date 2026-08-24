@@ -10,6 +10,7 @@
         "bacon/bacon-qr-code": "^3.1",
         "dedoc/scramble": "^0.13.41",
         "firebase/php-jwt": "^7.1",
+        "intervention/image": "^4.3",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "picqer/php-barcode-generator": "^3.2"

@@ -12,11 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LabelTemplateController extends Controller
 {
+    /**
+     * Display a listing of label templates with optional search and active status filters.
+     */
     public function index(Request $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
-        $query = LabelTemplate::where('business_uuid', $businessUuid);
+        $query = LabelTemplate::query();
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        }
 
         if ($request->filled('search')) {
             $query->where('name', 'like', "%{$request->input('search')}%");
@@ -40,9 +46,19 @@ class LabelTemplateController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created label template in storage.
+     */
     public function store(StoreLabelTemplateRequest $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
+
+        if (!$businessUuid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context (business_uuid) is required.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $template = LabelTemplate::create(array_merge($request->validated(), [
             'business_uuid' => $businessUuid,
@@ -55,6 +71,9 @@ class LabelTemplateController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Display the specified label template.
+     */
     public function show(LabelTemplate $template): JsonResponse
     {
         return response()->json([
@@ -63,6 +82,9 @@ class LabelTemplateController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified label template in storage.
+     */
     public function update(UpdateLabelTemplateRequest $request, LabelTemplate $template): JsonResponse
     {
         $template->update($request->validated());
@@ -74,6 +96,9 @@ class LabelTemplateController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified label template from storage.
+     */
     public function destroy(LabelTemplate $template): JsonResponse
     {
         $template->delete();

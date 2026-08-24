@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'identity' => [
+        'url' => env('IDENTITY_SERVICE_URL', 'http://identity-service:8000'),
+    ],
+
+    'business' => [
+        'url' => env('BUSINESS_SERVICE_URL', 'http://business-service:8000'),
+    ],
+
 ];

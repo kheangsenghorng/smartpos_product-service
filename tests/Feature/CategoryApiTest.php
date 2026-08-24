@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -28,6 +30,27 @@ class CategoryApiTest extends TestCase
             'business_uuid' => $businessUuid,
             'code' => 'BEV',
         ]);
+    }
+
+    public function test_can_create_category_with_webp_image(): void
+    {
+        Storage::fake('public');
+        $businessUuid = (string) Str::uuid();
+
+        $file = UploadedFile::fake()->image('category.png', 400, 400);
+
+        $response = $this->actingAsJwt($businessUuid)->post('/api/v1/categories', [
+            'name' => 'Desserts',
+            'code' => 'DESSERT',
+            'image' => $file,
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true);
+
+        $category = Category::where('code', 'DESSERT')->first();
+        $this->assertNotNull($category->image_path);
+        $this->assertStringContainsString('.webp', $category->image_path);
     }
 
     public function test_category_code_must_be_unique_per_business(): void

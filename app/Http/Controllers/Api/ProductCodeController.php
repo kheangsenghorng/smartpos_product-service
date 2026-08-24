@@ -18,6 +18,9 @@ class ProductCodeController extends Controller
         protected ProductCodeService $codeService
     ) {}
 
+    /**
+     * Display a listing of codes for the specified product.
+     */
     public function index(Product $product): JsonResponse
     {
         return response()->json([
@@ -26,9 +29,12 @@ class ProductCodeController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created product code in storage.
+     */
     public function store(StoreProductCodeRequest $request, Product $product): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
         $code = ProductCode::create(array_merge($request->validated(), [
             'business_uuid' => $businessUuid,
@@ -42,6 +48,9 @@ class ProductCodeController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Generate barcodes or QR codes for the product or variant.
+     */
     public function generate(Request $request, Product $product): JsonResponse
     {
         $validated = $request->validate([
@@ -77,6 +86,9 @@ class ProductCodeController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Remove the specified product code from storage.
+     */
     public function destroy(ProductCode $code): JsonResponse
     {
         $code->delete();

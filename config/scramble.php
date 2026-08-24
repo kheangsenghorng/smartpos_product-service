@@ -58,6 +58,7 @@ return [
     ],
 
     'renderer' => 'elements',
+    //  'renderer' => 'scalar',
 
     'renderers' => [
         /*
@@ -151,11 +152,5 @@ return [
      * Automatically document API security (OpenAPI `security` / `securitySchemes`) based on route
      * middleware.
      */
-    'security_strategy' => [
-        \Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy::class,
-        [
-            'middleware' => ['jwt.auth', 'auth', 'auth:*'],
-            'scheme' => \Dedoc\Scramble\Support\Generator\SecurityScheme::http('bearer', 'JWT'),
-        ],
-    ],
+    'security_strategy' => \Dedoc\Scramble\SecurityDocumentation\MiddlewareAuthSecurityStrategy::class,
 ];

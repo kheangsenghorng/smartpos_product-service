@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PrintLabelRequest extends FormRequest
+class PreviewLabelRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -24,15 +24,16 @@ class PrintLabelRequest extends FormRequest
             'label_template_id' => [
                 'required',
                 'integer',
-                Rule::exists('label_templates', 'id')->where('business_uuid', $businessUuid),
+                $businessUuid
+                    ? Rule::exists('label_templates', 'id')->where('business_uuid', $businessUuid)
+                    : 'exists:label_templates,id',
             ],
             'product_variant_id' => [
                 'nullable',
                 'integer',
                 Rule::exists('product_variants', 'id')->where('product_id', $productId),
             ],
-            'quantity' => ['nullable', 'integer', 'min:1', 'max:1000'],
-            'business_uuid' => ['nullable', 'string'],
+            'business_uuid' => ['required', 'string'],
         ];
     }
 }

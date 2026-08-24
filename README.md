@@ -31,9 +31,20 @@ The **SmartPOS Product Service** is a high-performance microservice that manages
 
 ---
 
-## 🛠️ Getting Started
+### Docker Setup (Recommended)
+```bash
+# Run from repository root:
+docker compose up -d --build product-service
+```
+- **Service Container**: `smartpos-product-service-1` (`:8003` -> internal `:8000`)
+- **MySQL Container**: `smartpos-product-mysql-1` (`:3309` -> internal `:3306`)
+- **Redis Container**: `smartpos-product-redis-1` (`:6382` -> internal `:6379`)
+- **phpMyAdmin**: `http://localhost:8083`
+- **API Documentation**: `http://localhost:8003/docs/products` or `http://localhost:8000/docs/products`
 
-### Local Setup
+---
+
+### Local Setup (Without Docker)
 ```bash
 cd product-service
 cp .env.example .env
@@ -45,6 +56,10 @@ php artisan serve --port=8003
 
 ### Running Tests
 ```bash
+# Inside docker
+docker exec smartpos-product-service-1 php artisan test
+
+# Locally
 php artisan test
 ```
 

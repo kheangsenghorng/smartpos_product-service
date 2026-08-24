@@ -57,6 +57,9 @@ class LabelTemplate extends Model
             if (empty($template->uuid)) {
                 $template->uuid = (string) Str::uuid();
             }
+            if (is_null($template->is_active)) {
+                $template->is_active = true;
+            }
         });
     }
 

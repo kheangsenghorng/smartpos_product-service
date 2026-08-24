@@ -180,4 +180,46 @@ class ProductApiTest extends TestCase
         $response = $this->actingAsJwt($businessB)->getJson("/api/v1/products/{$productA->id}");
         $response->assertStatus(403);
     }
+
+    public function test_can_create_and_update_product_with_iso8601_dates(): void
+    {
+        $businessUuid = (string) Str::uuid();
+
+        $unit = Unit::create([
+            'business_uuid' => $businessUuid,
+            'name' => 'Piece',
+            'code' => 'PCS',
+            'symbol' => 'pcs',
+        ]);
+
+        $response = $this->actingAsJwt($businessUuid)->postJson('/api/v1/products', [
+            'name' => 'Coca-Cola 330ml',
+            'sku' => 'COKE-330',
+            'unit_id' => $unit->id,
+            'available_from' => '2026-08-24T00:00:00Z',
+            'available_until' => '2027-08-24T23:59:59Z',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.available_from', '2026-08-24')
+            ->assertJsonPath('data.available_until', '2027-08-24');
+
+        $productId = $response->json('data.id');
+        $this->assertDatabaseHas('products', [
+            'id' => $productId,
+            'available_from' => '2026-08-24',
+            'available_until' => '2027-08-24',
+        ]);
+
+        // Test update with ISO 8601 string
+        $updateResponse = $this->actingAsJwt($businessUuid)->putJson("/api/v1/products/{$productId}", [
+            'available_from' => '2026-09-01T12:00:00+00:00',
+            'available_until' => '2027-09-01T12:00:00+00:00',
+        ]);
+
+        $updateResponse->assertOk()
+            ->assertJsonPath('data.available_from', '2026-09-01')
+            ->assertJsonPath('data.available_until', '2027-09-01');
+    }
 }

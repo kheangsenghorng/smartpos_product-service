@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Category extends Model
@@ -31,13 +32,33 @@ class Category extends Model
         'parent_id' => 'integer',
     ];
 
+    protected $appends = [
+        'image_url',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (Category $category) {
             if (empty($category->uuid)) {
                 $category->uuid = (string) Str::uuid();
             }
+            if (is_null($category->is_active)) {
+                $category->is_active = true;
+            }
         });
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (empty($this->image_path)) {
+            return null;
+        }
+
+        if (str_starts_with($this->image_path, 'http://') || str_starts_with($this->image_path, 'https://')) {
+            return $this->image_path;
+        }
+
+        return Storage::disk('public')->url($this->image_path);
     }
 
     public function parent(): BelongsTo

@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductPriceController extends Controller
 {
+    /**
+     * Display a listing of price tiers for the specified product.
+     */
     public function index(Product $product): JsonResponse
     {
         return response()->json([
@@ -20,9 +23,12 @@ class ProductPriceController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created price tier for the product in storage.
+     */
     public function store(StoreProductPriceRequest $request, Product $product): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
         $price = ProductPrice::create(array_merge($request->validated(), [
             'business_uuid' => $businessUuid,
@@ -36,6 +42,9 @@ class ProductPriceController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Update the specified product price in storage.
+     */
     public function update(Request $request, ProductPrice $price): JsonResponse
     {
         $validated = $request->validate([
@@ -57,6 +66,9 @@ class ProductPriceController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified product price from storage.
+     */
     public function destroy(ProductPrice $price): JsonResponse
     {
         $price->delete();

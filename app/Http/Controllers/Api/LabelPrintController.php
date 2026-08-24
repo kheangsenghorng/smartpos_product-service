@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PreviewLabelRequest;
 use App\Http\Requests\PrintLabelRequest;
 use App\Models\LabelTemplate;
 use App\Models\Product;
@@ -10,6 +11,7 @@ use App\Models\ProductVariant;
 use App\Services\LabelService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 class LabelPrintController extends Controller
@@ -18,14 +20,19 @@ class LabelPrintController extends Controller
         protected LabelService $labelService
     ) {}
 
-    public function preview(Request $request, Product $product): JsonResponse
+    /**
+     * Preview label format and data for a given product or variant.
+     */
+    public function preview(PreviewLabelRequest $request, Product $product): JsonResponse
     {
-        $validated = $request->validate([
-            'label_template_id' => ['required', 'integer', 'exists:label_templates,id'],
-            'product_variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
-        ]);
+        $businessUuid = $this->getBusinessUuid($request);
+        $validated = $request->validated();
 
-        $template = LabelTemplate::findOrFail($validated['label_template_id']);
+        $query = LabelTemplate::query();
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        }
+        $template = $query->findOrFail($validated['label_template_id']);
 
         $variant = null;
         if (!empty($validated['product_variant_id'])) {
@@ -41,13 +48,19 @@ class LabelPrintController extends Controller
         ]);
     }
 
+    /**
+     * Dispatch and record a label print job for a product or variant.
+     */
     public function print(PrintLabelRequest $request, Product $product): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
-        $userUuid = $request->attributes->get('auth_user_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
+        $userUuid = $this->getUserUuid($request);
 
-        $template = LabelTemplate::where('business_uuid', $businessUuid)
-            ->findOrFail($request->input('label_template_id'));
+        $query = LabelTemplate::query();
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        }
+        $template = $query->findOrFail($request->input('label_template_id'));
 
         $variant = null;
         if ($request->filled('product_variant_id')) {

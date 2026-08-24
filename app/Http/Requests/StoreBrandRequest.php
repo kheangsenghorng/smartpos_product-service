@@ -12,11 +12,22 @@ class StoreBrandRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('is_active')) {
+            $this->merge([
+                'is_active' => filter_var($this->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
-        $businessUuid = $this->attributes->get('auth_business_uuid') ?? $this->input('business_uuid');
+        $businessUuid = $this->attributes->get('auth_business_uuid') 
+            ?? $this->header('X-Business-Uuid') 
+            ?? $this->input('business_uuid');
 
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:150'],
             'code' => [
                 'required',
@@ -25,8 +36,14 @@ class StoreBrandRequest extends FormRequest
                 Rule::unique('brands', 'code')->where('business_uuid', $businessUuid),
             ],
             'description' => ['nullable', 'string'],
-            'logo_path' => ['nullable', 'string', 'max:255'],
+            'logo' => ['nullable', 'file', 'image', 'mimes:webp,png,jpg,jpeg,svg,gif,bmp,avif', 'max:5120'],
             'is_active' => ['nullable', 'boolean'],
         ];
+
+        if (!$businessUuid) {
+            $rules['business_uuid'] = ['required', 'string'];
+        }
+
+        return $rules;
     }
 }

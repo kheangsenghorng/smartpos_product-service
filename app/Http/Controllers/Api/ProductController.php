@@ -18,12 +18,33 @@ class ProductController extends Controller
         protected ProductProvisionService $provisionService
     ) {}
 
+    /**
+     * Display a listing of products with filters, associations, and pagination.
+     */
     public function index(Request $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $isAdmin = $this->isGlobalAdmin($request);
+        $businessUuid = $this->getBusinessUuid($request);
 
-        $query = Product::where('business_uuid', $businessUuid)
-            ->with(['category', 'brand', 'unit', 'currentPrice', 'primaryImage', 'codes', 'variants.currentPrice', 'variants.codes']);
+        $query = Product::with([
+            'category', 
+            'brand', 
+            'unit', 
+            'currentPrice', 
+            'primaryImage', 
+            'codes', 
+            'variants.currentPrice', 
+            'variants.codes'
+        ]);
+
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        } elseif (!$isAdmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context is required.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -77,10 +98,20 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created product along with provisioning initial pricing and codes.
+     */
     public function store(StoreProductRequest $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
-        $userUuid = $request->attributes->get('auth_user_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
+        $userUuid = $this->getUserUuid($request);
+
+        if (!$businessUuid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context (business_uuid) is required.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $product = $this->provisionService->createProduct(
             $request->validated(),
@@ -95,6 +126,9 @@ class ProductController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Display the specified product with all relations and price history.
+     */
     public function show(Product $product): JsonResponse
     {
         $product->load([
@@ -115,9 +149,12 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified product in storage.
+     */
     public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        $userUuid = $request->attributes->get('auth_user_uuid');
+        $userUuid = $this->getUserUuid($request);
 
         $product->update(array_merge($request->validated(), [
             'updated_by_uuid' => $userUuid,
@@ -130,6 +167,9 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified product from storage.
+     */
     public function destroy(Product $product): JsonResponse
     {
         $product->delete();

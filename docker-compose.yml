@@ -35,8 +35,6 @@ services:
 
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-smartpos_product}
-      MYSQL_USER: ${DB_USERNAME:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
 
     ports:

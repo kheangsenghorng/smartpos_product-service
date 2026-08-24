@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,12 +49,26 @@ class Product extends Model
         'allow_negative_stock' => 'boolean',
         'is_taxable' => 'boolean',
         'is_active' => 'boolean',
-        'available_from' => 'date:Y-m-d',
-        'available_until' => 'date:Y-m-d',
         'category_id' => 'integer',
         'brand_id' => 'integer',
         'unit_id' => 'integer',
     ];
+
+    protected function availableFrom(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d') : null,
+            set: fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d') : null,
+        );
+    }
+
+    protected function availableUntil(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d') : null,
+            set: fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d') : null,
+        );
+    }
 
     protected static function booted(): void
     {
@@ -63,6 +78,9 @@ class Product extends Model
             }
             if (empty($product->slug)) {
                 $product->slug = Str::slug($product->name);
+            }
+            if (is_null($product->is_active)) {
+                $product->is_active = true;
             }
         });
     }

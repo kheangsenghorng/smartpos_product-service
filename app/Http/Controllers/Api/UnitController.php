@@ -12,11 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UnitController extends Controller
 {
+    /**
+     * Display a listing of measurement units with search and active status filters.
+     */
     public function index(Request $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
-        $query = Unit::where('business_uuid', $businessUuid);
+        $query = Unit::query();
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        }
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -45,9 +51,19 @@ class UnitController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created measurement unit in storage.
+     */
     public function store(StoreUnitRequest $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
+
+        if (!$businessUuid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context (business_uuid) is required.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $unit = Unit::create(array_merge($request->validated(), [
             'business_uuid' => $businessUuid,
@@ -60,6 +76,9 @@ class UnitController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Display the specified measurement unit.
+     */
     public function show(Unit $unit): JsonResponse
     {
         return response()->json([
@@ -68,6 +87,9 @@ class UnitController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified measurement unit in storage.
+     */
     public function update(UpdateUnitRequest $request, Unit $unit): JsonResponse
     {
         $unit->update($request->validated());
@@ -79,6 +101,9 @@ class UnitController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified measurement unit from storage.
+     */
     public function destroy(Unit $unit): JsonResponse
     {
         if ($unit->products()->exists()) {

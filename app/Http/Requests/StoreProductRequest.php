@@ -14,9 +14,11 @@ class StoreProductRequest extends FormRequest
 
     public function rules(): array
     {
-        $businessUuid = $this->attributes->get('auth_business_uuid') ?? $this->input('business_uuid');
+        $businessUuid = $this->attributes->get('auth_business_uuid') 
+            ?? $this->header('X-Business-Uuid') 
+            ?? $this->input('business_uuid');
 
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'sku' => [
                 'required',
@@ -75,5 +77,11 @@ class StoreProductRequest extends FormRequest
             // Initial images
             'images' => ['nullable', 'array'],
         ];
+
+        if (!$businessUuid) {
+            $rules['business_uuid'] = ['required', 'string'];
+        }
+
+        return $rules;
     }
 }

@@ -6,17 +6,37 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
+use App\Services\ImageUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BrandController extends Controller
 {
+    public function __construct(
+        protected ImageUploadService $imageService
+    ) {}
+
+    /**
+     * Display a listing of brands with optional search and active status filters.
+     * Admins can view all brands across businesses or filter by specific business_uuid.
+     */
     public function index(Request $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $isAdmin = $this->isGlobalAdmin($request);
+        $businessUuid = $this->getBusinessUuid($request);
 
-        $query = Brand::where('business_uuid', $businessUuid);
+        $query = Brand::query();
+
+        // Filter by business_uuid if provided, or if the user is not a global admin
+        if ($businessUuid) {
+            $query->where('business_uuid', $businessUuid);
+        } elseif (!$isAdmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context is required. Please provide business_uuid in the request or token.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -44,11 +64,29 @@ class BrandController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created brand in storage with image upload support.
+     */
     public function store(StoreBrandRequest $request): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
-        $brand = Brand::create(array_merge($request->validated(), [
+        if (!$businessUuid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business context (business_uuid) is required.',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $request->validated();
+
+        // Handle image upload (.webp, .png, .jpg, etc.)
+        if ($request->hasFile('logo')) {
+            $data['logo_path'] = $this->imageService->upload($request->file('logo'), 'brands');
+            unset($data['logo']);
+        }
+
+        $brand = Brand::create(array_merge($data, [
             'business_uuid' => $businessUuid,
         ]));
 
@@ -59,6 +97,9 @@ class BrandController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Display the specified brand.
+     */
     public function show(Brand $brand): JsonResponse
     {
         return response()->json([
@@ -67,9 +108,21 @@ class BrandController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified brand in storage with image replacement support.
+     */
     public function update(UpdateBrandRequest $request, Brand $brand): JsonResponse
     {
-        $brand->update($request->validated());
+        $data = $request->validated();
+
+        // Handle image replacement (.webp, .png, etc.)
+        if ($request->hasFile('logo')) {
+            $this->imageService->delete($brand->logo_path);
+            $data['logo_path'] = $this->imageService->upload($request->file('logo'), 'brands');
+            unset($data['logo']);
+        }
+
+        $brand->update($data);
 
         return response()->json([
             'success' => true,
@@ -78,8 +131,15 @@ class BrandController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified brand from storage.
+     */
     public function destroy(Brand $brand): JsonResponse
     {
+        if ($brand->logo_path) {
+            $this->imageService->delete($brand->logo_path);
+        }
+
         $brand->delete();
 
         return response()->json([

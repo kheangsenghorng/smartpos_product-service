@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Brand extends Model
@@ -26,13 +27,33 @@ class Brand extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = [
+        'logo_url',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (Brand $brand) {
             if (empty($brand->uuid)) {
                 $brand->uuid = (string) Str::uuid();
             }
+            if (is_null($brand->is_active)) {
+                $brand->is_active = true;
+            }
         });
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        if (empty($this->logo_path)) {
+            return null;
+        }
+
+        if (str_starts_with($this->logo_path, 'http://') || str_starts_with($this->logo_path, 'https://')) {
+            return $this->logo_path;
+        }
+
+        return Storage::disk('public')->url($this->logo_path);
     }
 
     public function products(): HasMany

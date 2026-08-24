@@ -19,6 +19,9 @@ class ProductVariantController extends Controller
         protected ProductCodeService $codeService
     ) {}
 
+    /**
+     * Display a listing of variants for the specified product.
+     */
     public function index(Product $product): JsonResponse
     {
         return response()->json([
@@ -27,9 +30,12 @@ class ProductVariantController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created product variant with optional code and price generation.
+     */
     public function store(StoreProductVariantRequest $request, Product $product): JsonResponse
     {
-        $businessUuid = $request->attributes->get('auth_business_uuid') ?? $request->input('business_uuid');
+        $businessUuid = $this->getBusinessUuid($request);
 
         $variant = DB::transaction(function () use ($request, $product, $businessUuid) {
             $data = $request->validated();
@@ -76,6 +82,9 @@ class ProductVariantController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * Update the specified product variant in storage.
+     */
     public function update(UpdateProductVariantRequest $request, ProductVariant $variant): JsonResponse
     {
         $variant->update($request->validated());
@@ -87,6 +96,9 @@ class ProductVariantController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified product variant from storage.
+     */
     public function destroy(ProductVariant $variant): JsonResponse
     {
         $variant->delete();

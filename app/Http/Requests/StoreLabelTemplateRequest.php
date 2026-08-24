@@ -13,7 +13,11 @@ class StoreLabelTemplateRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $businessUuid = $this->attributes->get('auth_business_uuid') 
+            ?? $this->header('X-Business-Uuid') 
+            ?? $this->input('business_uuid');
+
+        $rules = [
             'name' => ['required', 'string', 'max:100'],
             'width_mm' => ['required', 'numeric', 'min:10', 'max:500'],
             'height_mm' => ['required', 'numeric', 'min:10', 'max:500'],
@@ -26,5 +30,11 @@ class StoreLabelTemplateRequest extends FormRequest
             'is_default' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
         ];
+
+        if (!$businessUuid) {
+            $rules['business_uuid'] = ['required', 'string'];
+        }
+
+        return $rules;
     }
 }
