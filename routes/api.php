@@ -17,7 +17,7 @@ Route::get('/health', function () {
     ]);
 });
 
-Route::prefix('v1')->middleware(['jwt.auth', 'product.access'])->group(function () {
+Route::prefix('v1')->middleware(['throttle:api', 'jwt.auth', 'product.access'])->group(function () {
     require __DIR__ . '/api/categories.php';
     require __DIR__ . '/api/brands.php';
     require __DIR__ . '/api/units.php';

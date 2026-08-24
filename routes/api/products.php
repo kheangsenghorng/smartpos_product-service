@@ -22,7 +22,7 @@ Route::prefix('products')->group(function () {
     // Product Codes sub-routes
     Route::get('/{product}/codes', [ProductCodeController::class, 'index'])->middleware('permission:product_codes.view,products.view');
     Route::post('/{product}/codes', [ProductCodeController::class, 'store'])->middleware('permission:product_codes.create,products.update');
-    Route::post('/{product}/codes/generate', [ProductCodeController::class, 'generate'])->middleware('permission:product_codes.create,products.update');
+    Route::post('/{product}/codes/generate', [ProductCodeController::class, 'generate'])->middleware(['permission:product_codes.create,products.update', 'throttle:heavy-ops']);
 
     // Product Prices sub-routes
     Route::get('/{product}/prices', [ProductPriceController::class, 'index'])->middleware('permission:product_prices.view,products.view');
@@ -33,6 +33,6 @@ Route::prefix('products')->group(function () {
     Route::post('/{product}/images', [ProductImageController::class, 'store'])->middleware('permission:product_images.create,products.update');
 
     // Product Label Preview & Print sub-routes
-    Route::post('/{product}/labels/preview', [LabelPrintController::class, 'preview'])->middleware('permission:labels.view,labels.print');
-    Route::post('/{product}/labels/print', [LabelPrintController::class, 'print'])->middleware('permission:labels.print');
+    Route::post('/{product}/labels/preview', [LabelPrintController::class, 'preview'])->middleware(['permission:labels.view,labels.print', 'throttle:heavy-ops']);
+    Route::post('/{product}/labels/print', [LabelPrintController::class, 'print'])->middleware(['permission:labels.print', 'throttle:heavy-ops']);
 });

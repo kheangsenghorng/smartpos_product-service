@@ -57,5 +57,32 @@ class AppServiceProvider extends ServiceProvider
                 \Dedoc\Scramble\Support\Generator\SecurityScheme::http('bearer', 'JWT')
             );
         });
+
+        // 🛡️ Security Rate Limiters to protect against DoS, brute-force & API flooding
+        \Illuminate\Support\Facades\RateLimiter::for('api', function (Request $request) {
+            $identifier = $request->attributes->get('auth_user_uuid')
+                ?: $request->attributes->get('auth_business_uuid')
+                ?: $request->ip();
+
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(120)->by($identifier)->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many requests. Please slow down.',
+                ], 429);
+            });
+        });
+
+        \Illuminate\Support\Facades\RateLimiter::for('heavy-ops', function (Request $request) {
+            $identifier = $request->attributes->get('auth_user_uuid')
+                ?: $request->attributes->get('auth_business_uuid')
+                ?: $request->ip();
+
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(30)->by($identifier)->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Rate limit exceeded for resource-intensive operations. Please try again later.',
+                ], 429);
+            });
+        });
     }
 }
