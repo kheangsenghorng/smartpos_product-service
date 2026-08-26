@@ -18,7 +18,15 @@ class ImageUploadService
     }
 
     /**
-     * Process, convert to .webp, and store an image file on public disk.
+     * Get the active storage disk.
+     */
+    public function disk(): string
+    {
+        return config('filesystems.default', 'public');
+    }
+
+    /**
+     * Process, convert to .webp, and store an image file on default disk.
      *
      * @param  UploadedFile  $file
      * @param  string  $folder
@@ -30,6 +38,7 @@ class ImageUploadService
     {
         $filename = Str::uuid() . '.webp';
         $relativePath = $folder . '/' . $filename;
+        $activeDisk = $this->disk();
 
         try {
             $source = $file->getRealPath() ?: $file->getPathname();
@@ -46,20 +55,20 @@ class ImageUploadService
             // Encode to .webp format
             $encodedWebp = $image->encodeUsingFileExtension('webp', $quality);
 
-            // Store encoded binary on public disk
-            Storage::disk('public')->put($relativePath, (string) $encodedWebp);
+            // Store encoded binary on active disk (e.g. MinIO s3 or local public)
+            Storage::disk($activeDisk)->put($relativePath, (string) $encodedWebp);
         } catch (\Throwable $e) {
             // Fallback to native upload if image processing encounters an exception
             $extension = $file->getClientOriginalExtension() ?: 'webp';
             $fallbackFilename = Str::uuid() . '.' . strtolower($extension);
-            $relativePath = $file->storeAs($folder, $fallbackFilename, 'public');
+            $relativePath = $file->storeAs($folder, $fallbackFilename, $activeDisk);
         }
 
         return $relativePath;
     }
 
     /**
-     * Delete an existing stored image from public disk.
+     * Delete an existing stored image from configured disk.
      */
     public function delete(?string $pathOrUrl): void
     {
@@ -67,12 +76,15 @@ class ImageUploadService
             return;
         }
 
-        // Extract relative path from URL or direct path
+        $activeDisk = $this->disk();
+        $diskUrl = Storage::disk($activeDisk)->url('');
         $publicUrl = Storage::disk('public')->url('');
-        $relative = str_replace([$publicUrl, '/storage/'], '', $pathOrUrl);
+        $relative = str_replace([$diskUrl, $publicUrl, '/storage/'], '', $pathOrUrl);
         $relative = ltrim($relative, '/');
 
-        if (Storage::disk('public')->exists($relative)) {
+        if (Storage::disk($activeDisk)->exists($relative)) {
+            Storage::disk($activeDisk)->delete($relative);
+        } elseif (Storage::disk('public')->exists($relative)) {
             Storage::disk('public')->delete($relative);
         }
     }

@@ -57,8 +57,8 @@ return [
         'title' => 'SmartPOS Product Service API',
     ],
 
-    'renderer' => 'elements',
-    //  'renderer' => 'scalar',
+    // 'renderer' => 'elements',
+     'renderer' => 'scalar',
 
     'renderers' => [
         /*

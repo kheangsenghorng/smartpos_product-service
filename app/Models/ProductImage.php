@@ -53,7 +53,7 @@ class ProductImage extends Model
             return $this->image_path;
         }
 
-        return Storage::disk('public')->url($this->image_path);
+        return Storage::disk(config('filesystems.default', 'public'))->url($this->image_path);
     }
 
     public function product(): BelongsTo

@@ -53,7 +53,7 @@ class Brand extends Model
             return $this->logo_path;
         }
 
-        return Storage::disk('public')->url($this->logo_path);
+        return Storage::disk(config('filesystems.default', 'public'))->url($this->logo_path);
     }
 
     public function products(): HasMany

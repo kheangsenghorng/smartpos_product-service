@@ -12,6 +12,37 @@ class UpdateCategoryRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+
+        if ($this->has('is_active')) {
+            $merge['is_active'] = filter_var($this->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
+
+        if ($this->has('parent_id')) {
+            $parentId = $this->input('parent_id');
+            if ($parentId === '' || $parentId === 'null' || $parentId === 'undefined' || $parentId === 0 || $parentId === '0') {
+                $merge['parent_id'] = null;
+            } elseif (is_numeric($parentId)) {
+                $merge['parent_id'] = (int) $parentId;
+            }
+        }
+
+        if ($this->has('sort_order')) {
+            $sortOrder = $this->input('sort_order');
+            if ($sortOrder === '' || $sortOrder === 'null' || $sortOrder === 'undefined') {
+                $merge['sort_order'] = 0;
+            } elseif (is_numeric($sortOrder)) {
+                $merge['sort_order'] = (int) $sortOrder;
+            }
+        }
+
+        if (!empty($merge)) {
+            $this->merge($merge);
+        }
+    }
+
     public function rules(): array
     {
         $businessUuid = $this->attributes->get('auth_business_uuid') 
@@ -37,6 +68,7 @@ class UpdateCategoryRequest extends FormRequest
                 Rule::exists('categories', 'id')->where('business_uuid', $businessUuid),
             ],
             'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'file', 'image', 'mimes:webp,png,jpg,jpeg,svg,gif,bmp,avif', 'max:5120'],
             'image_path' => ['nullable', 'string', 'max:500'],
             'sort_order' => ['nullable', 'integer'],
             'is_active' => ['nullable', 'boolean'],
@@ -44,8 +76,6 @@ class UpdateCategoryRequest extends FormRequest
 
         if ($this->hasFile('image_path')) {
             $rules['image_path'] = ['nullable', 'file', 'image', 'mimes:webp,png,jpg,jpeg,svg,gif,bmp,avif', 'max:5120'];
-        } elseif ($this->hasFile('image')) {
-            $rules['image'] = ['nullable', 'file', 'image', 'mimes:webp,png,jpg,jpeg,svg,gif,bmp,avif', 'max:5120'];
         }
 
         return $rules;
