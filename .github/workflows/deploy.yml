@@ -1,0 +1,53 @@
+name: CD - Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Production VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "=============================================="
+            echo "🚀 Starting Automated Deployment: Product Service"
+            echo "=============================================="
+            
+            # Navigate to workspace
+            if [ -d "/var/www/smartpos" ]; then
+              cd /var/www/smartpos
+              
+              # If central deploy.sh exists, use it
+              if [ -f "deploy.sh" ]; then
+                chmod +x deploy.sh
+                ./deploy.sh product
+              else
+                cd product-service
+                git pull origin main || git pull origin master
+                docker compose up -d --build
+                docker compose exec -T product-service php artisan migrate --force
+                docker compose exec -T product-service php artisan optimize
+              fi
+            else
+              echo "❌ Error: /var/www/smartpos directory not found on VPS."
+              exit 1
+            fi
+            
+            echo "=============================================="
+            echo "✅ Product Service Deployment Completed!"
+            echo "=============================================="
