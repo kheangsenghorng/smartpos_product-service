@@ -1,0 +1,101 @@
+name,sku,category,brand,unit,selling_price,cost_price,currency_code,barcode,is_taxable,track_inventory,is_active,description
+Coca-Cola Original 330ml Can,COKE-CAN-330,Beverages,Coca-Cola,can,0.85,0.45,USD,885000100001,1,1,1,Classic refreshing sparkling cola drink
+Coca-Cola Zero Sugar 330ml Can,COKE-ZERO-330,Beverages,Coca-Cola,can,0.85,0.45,USD,885000100002,1,1,1,Zero sugar zero calories refreshing cola
+Sprite Lemon-Lime 330ml Can,SPRITE-CAN-330,Beverages,Sprite,can,0.85,0.45,USD,885000100003,1,1,1,Crisp lemon-lime flavored sparkling drink
+Fanta Orange 330ml Can,FANTA-ORG-330,Beverages,Fanta,can,0.85,0.45,USD,885000100004,1,1,1,Fruity and bubbly orange soda
+Pepsi Regular 330ml Can,PEPSI-CAN-330,Beverages,Pepsi,can,0.80,0.42,USD,885000100005,1,1,1,Bold refreshing cola flavor
+Pepsi Black Zero 330ml Can,PEPSI-BLK-330,Beverages,Pepsi,can,0.80,0.42,USD,885000100006,1,1,1,Max taste zero sugar black cola
+7Up Lemon-Lime 330ml Can,7UP-CAN-330,Beverages,7Up,can,0.80,0.42,USD,885000100007,1,1,1,Clear crisp citrus refreshment
+Red Bull Energy Drink 250ml,REDBULL-250,Beverages,Red Bull,can,1.75,0.95,USD,885000100008,1,1,1,Energy drink with taurine and B-vitamins
+Monster Energy Original 500ml,MONSTER-500,Beverages,Monster,can,2.50,1.35,USD,885000100009,1,1,1,High caffeine energy booster
+Evian Natural Mineral Water 500ml,EVIAN-500,Beverages,Evian,bottle,1.60,0.85,USD,885000100010,1,1,1,Natural mineral water from French Alps
+Dasani Purified Water 500ml,DASANI-500,Beverages,Dasani,bottle,0.50,0.20,USD,885000100011,1,1,1,Pure clean bottled drinking water
+Aquafina Purified Water 500ml,AQUAFINA-500,Beverages,Aquafina,bottle,0.50,0.20,USD,885000100012,1,1,1,7-step purified bottled drinking water
+San Pellegrino Sparkling 500ml,SANPEL-500,Beverages,San Pellegrino,bottle,2.20,1.15,USD,885000100013,1,1,1,Italian sparkling natural mineral water
+Oishi Green Tea Original 500ml,OISHI-GRN-500,Beverages,Oishi,bottle,1.20,0.65,USD,885000100014,1,1,1,Brewed authentic Japanese green tea
+Oishi Lemon Black Tea 500ml,OISHI-LMN-500,Beverages,Oishi,bottle,1.20,0.65,USD,885000100015,1,1,1,Sweet black tea with real lemon extract
+Nescafe Ready-to-Drink Latte 240ml,NES-LATTE-240,Beverages,Nescafe,can,1.10,0.60,USD,885000100016,1,1,1,Chilled smooth milk coffee beverage
+Nescafe Ready-to-Drink Espresso 240ml,NES-ESPR-240,Beverages,Nescafe,can,1.10,0.60,USD,885000100017,1,1,1,Rich dark roasted iced espresso
+Minute Maid Orange Juice 330ml,MNT-ORG-330,Beverages,Minute Maid,bottle,1.15,0.60,USD,885000100018,1,1,1,Pulp-rich real orange juice
+Minute Maid Apple Juice 330ml,MNT-APL-330,Beverages,Minute Maid,bottle,1.15,0.60,USD,885000100019,1,1,1,Crisp 100% clarified apple juice
+Gatorade Cool Blue 500ml,GATOR-BLU-500,Beverages,Gatorade,bottle,1.50,0.80,USD,885000100020,1,1,1,Electrolyte sports hydration drink
+Lay's Classic Salted Potato Chips 50g,LAYS-SALT-50,Snacks,Lays,bag,1.25,0.65,USD,885000100021,1,1,1,Crispy thin sliced salted potato chips
+Lay's Sour Cream & Onion 50g,LAYS-SC-50,Snacks,Lays,bag,1.25,0.65,USD,885000100022,1,1,1,Savory onion and creamy sour cream chips
+Lay's Barbecue Flavored 50g,LAYS-BBQ-50,Snacks,Lays,bag,1.25,0.65,USD,885000100023,1,1,1,Smoky sweet barbecue seasoned chips
+Pringles Original Potato Crisps 107g,PRING-ORIG-107,Snacks,Pringles,can,2.40,1.25,USD,885000100024,1,1,1,Stackable crisp potato chips in tube
+Pringles Sour Cream & Onion 107g,PRING-SC-107,Snacks,Pringles,can,2.40,1.25,USD,885000100025,1,1,1,Tangy sour cream seasoned potato crisps
+Pringles Cheddar Cheese 107g,PRING-CHD-107,Snacks,Pringles,can,2.40,1.25,USD,885000100026,1,1,1,Rich golden cheddar cheese potato crisps
+Doritos Nacho Cheese Tortilla Chips 65g,DORIT-NACHO-65,Snacks,Doritos,bag,1.50,0.80,USD,885000100027,1,1,1,Zesty bold nacho cheese tortilla chips
+Doritos Sweet Chili Tortilla Chips 65g,DORIT-CHILI-65,Snacks,Doritos,bag,1.50,0.80,USD,885000100028,1,1,1,Spicy sweet chili flavored crunch
+Cheetos Crunchy Cheese Snacks 60g,CHEET-CRN-60,Snacks,Cheetos,bag,1.35,0.70,USD,885000100029,1,1,1,Crunchy real cheese flavored snacks
+Cheetos Flamin Hot Puffs 60g,CHEET-HOT-60,Snacks,Cheetos,bag,1.35,0.70,USD,885000100030,1,1,1,Fiery spicy hot cheese flavored puffs
+Oreo Original Sandwich Cookies 133g,OREO-ORIG-133,Snacks,Oreo,pack,1.40,0.75,USD,885000100031,1,1,1,Chocolate sandwich cookies with vanilla creme
+Oreo Double Stuf Cookies 133g,OREO-DBL-133,Snacks,Oreo,pack,1.60,0.85,USD,885000100032,1,1,1,Double vanilla creme chocolate cookies
+KitKat 4-Finger Milk Chocolate 45g,KITKAT-4F-45,Snacks,KitKat,bar,1.00,0.50,USD,885000100033,1,1,1,Crisp wafer fingers in smooth milk chocolate
+KitKat Chunky Peanut Butter 42g,KITKAT-PB-42,Snacks,KitKat,bar,1.20,0.60,USD,885000100034,1,1,1,Thick chocolate bar with crunchy wafer and peanut butter
+Snickers Single Chocolate Bar 50g,SNICK-BAR-50,Snacks,Snickers,bar,1.10,0.55,USD,885000100035,1,1,1,"Milk chocolate with nougat, caramel and peanuts"
+Twix Twin Chocolate Bar 50g,TWIX-BAR-50,Snacks,Twix,bar,1.10,0.55,USD,885000100036,1,1,1,Crunchy biscuit and caramel wrapped in chocolate
+M&Ms Milk Chocolate Candies 45g,MM-MILK-45,Snacks,MMs,bag,1.20,0.60,USD,885000100037,1,1,1,Bite-sized colorful button chocolates
+M&Ms Peanut Chocolate Candies 45g,MM-PNUT-45,Snacks,MMs,bag,1.20,0.60,USD,885000100038,1,1,1,Roasted peanuts coated in milk chocolate candy
+Haribo Goldbears Gummy Candy 80g,HARIBO-GLD-80,Snacks,Haribo,bag,1.50,0.80,USD,885000100039,1,1,1,Assorted fruit flavored gummy bears
+Planters Salted Peanuts 100g,PLANTR-PNT-100,Snacks,Planters,bag,1.80,0.95,USD,885000100040,1,1,1,Oven roasted sea-salted peanuts
+Anchor Whole Milk UHT 1L,ANCHOR-MLK-1L,Dairy,Anchor,box,2.60,1.60,USD,885000100041,1,1,1,Pure New Zealand full cream cow milk
+Anchor Low Fat Milk UHT 1L,ANCHOR-LFT-1L,Dairy,Anchor,box,2.60,1.60,USD,885000100042,1,1,1,Reduced fat fresh homogenized milk
+Dutch Mill Pasteurized Milk 830ml,DUTCH-MLK-830,Dairy,Dutch Mill,bottle,2.20,1.30,USD,885000100043,1,1,1,Pasteurized fresh whole cow milk
+Dutch Mill Strawberry Drinking Yogurt 180ml,DUTCH-STR-180,Dairy,Dutch Mill,bottle,0.70,0.35,USD,885000100044,1,1,1,Creamy yogurt drink with strawberry pulp
+Dutch Mill Blueberry Drinking Yogurt 180ml,DUTCH-BLU-180,Dairy,Dutch Mill,bottle,0.70,0.35,USD,885000100045,1,1,1,Probiotic yogurt drink with real blueberry juice
+Kraft Singles Processed Cheese 12s,KRAFT-SGL-12,Dairy,Kraft,pack,3.20,1.90,USD,885000100046,1,1,1,Individually wrapped cheddar cheese slices
+Anchor Pure Salted Butter 227g,ANCHOR-BTR-227,Dairy,Anchor,block,3.80,2.30,USD,885000100047,1,1,1,Traditional grass-fed salted creamery butter
+Anchor Unsalted Butter 227g,ANCHOR-UNS-227,Dairy,Anchor,block,3.80,2.30,USD,885000100048,1,1,1,Pure sweet cream baking butter
+Philadelphia Cream Cheese 250g,PHILA-CRM-250,Dairy,Philadelphia,block,4.50,2.80,USD,885000100049,1,1,1,Smooth rich spreadable cream cheese block
+Danone Natural Plain Yogurt 4x110g,DANONE-PLN-4,Dairy,Danone,pack,2.80,1.50,USD,885000100050,1,1,1,Probiotic active cultured plain natural yogurt
+White Sandwich Bread 500g,BREAD-WHT-500,Bakery,DailyFresh,loaf,1.80,0.90,USD,885000100051,1,1,1,Soft sliced white toast bread
+Whole Wheat Bread 500g,BREAD-WHT-500W,Bakery,DailyFresh,loaf,2.10,1.10,USD,885000100052,1,1,1,Fiber-rich stone-ground whole wheat loaf
+Butter Croissant 2-Pack,BAK-CRST-2P,Bakery,DailyFresh,pack,2.50,1.20,USD,885000100053,1,1,1,Flaky golden French style butter croissants
+Chocolate Chip Muffins 2-Pack,BAK-MUFF-CHOC,Bakery,DailyFresh,pack,2.40,1.15,USD,885000100054,1,1,1,Moist vanilla muffins loaded with dark chocolate chips
+Blueberry Muffins 2-Pack,BAK-MUFF-BLU,Bakery,DailyFresh,pack,2.40,1.15,USD,885000100055,1,1,1,Freshly baked sweet wild blueberry muffins
+Burger Buns Sesame 4-Pack,BAK-BUNS-SES,Bakery,DailyFresh,pack,1.90,0.95,USD,885000100056,1,1,1,Toasted sesame topped soft sandwich burger buns
+Hot Dog Rolls 4-Pack,BAK-ROLL-HD,Bakery,DailyFresh,pack,1.80,0.90,USD,885000100057,1,1,1,Pre-sliced soft finger rolls for hot dogs
+Baguette Traditional 250g,BAK-BAGUETTE,Bakery,DailyFresh,piece,1.50,0.70,USD,885000100058,1,1,1,Crusty artisan French sourdough baguette
+Cinnamon Raisin Bagels 4-Pack,BAK-BAGEL-CIN,Bakery,DailyFresh,pack,2.80,1.40,USD,885000100059,1,1,1,Chewy New York style sweet cinnamon bagels
+Pita Bread White 5-Pack,BAK-PITA-5P,Bakery,DailyFresh,pack,2.00,1.00,USD,885000100060,1,1,1,Pocket flatbread for wraps and dips
+Jasmine Fragrant Rice 5kg,RICE-JASM-5K,Pantry,RoyalGold,bag,7.50,4.80,USD,885000100061,1,1,1,Premium aromatic Thai long grain jasmine rice
+Basmati Long Grain Rice 5kg,RICE-BASM-5K,Pantry,Kohinoor,bag,9.50,6.20,USD,885000100062,1,1,1,Aged extra-long slender basmati grain rice
+Mama Instant Noodles Tom Yum 5x85g,MAMA-TYM-5P,Pantry,Mama,pack,2.20,1.20,USD,885000100063,1,1,1,Spicy sour shrimp broth instant ramen noodles
+Indomie Mi Goreng Fried Noodles 5x85g,INDO-GORG-5P,Pantry,Indomie,pack,2.20,1.20,USD,885000100064,1,1,1,Savory Indonesian sweet soy fried noodles
+Nissin Cup Noodles Seafood 75g,NISS-SEAFD-75,Pantry,Nissin,cup,1.30,0.70,USD,885000100065,1,1,1,Quick instant noodles with crab stick and squid
+Barilla Spaghetti No.5 500g,BAR-SPAG-500,Pantry,Barilla,box,2.40,1.30,USD,885000100066,1,1,1,Italian durum wheat semolina dry spaghetti pasta
+Barilla Penne Rigate 500g,BAR-PENNE-500,Pantry,Barilla,box,2.40,1.30,USD,885000100067,1,1,1,Fluted tube pasta ideal for chunky meat sauces
+Barilla Basilico Pasta Sauce 400g,BAR-BASIL-400,Pantry,Barilla,jar,3.20,1.80,USD,885000100068,1,1,1,Vine-ripened Italian tomato sauce with sweet basil
+Heinz Tomato Ketchup 570g,HEINZ-KETCH-570,Pantry,Heinz,bottle,2.80,1.50,USD,885000100069,1,1,1,Thick and rich slow-cooked classic tomato ketchup
+Heinz Yellow Mustard 400g,HEINZ-MUST-400,Pantry,Heinz,bottle,2.50,1.30,USD,885000100070,1,1,1,Smooth mild tangy yellow condiment mustard
+Best Foods Real Mayonnaise 430ml,BEST-MAYO-430,Pantry,Best Foods,jar,3.50,2.10,USD,885000100071,1,1,1,Rich creamy whole egg sandwich spread
+Kikkoman All-Purpose Soy Sauce 500ml,KIKK-SOY-500,Pantry,Kikkoman,bottle,3.60,2.00,USD,885000100072,1,1,1,Naturally brewed Japanese dark soy sauce
+Lee Kum Kee Premium Oyster Sauce 510g,LKK-OYST-510,Pantry,Lee Kum Kee,bottle,3.40,1.90,USD,885000100073,1,1,1,Concentrated oyster extract rich wok stir-fry sauce
+Sriracha Hot Chili Sauce 435ml,SRIR-CHILI-435,Pantry,Huy Fong,bottle,3.80,2.20,USD,885000100074,1,1,1,Sun-ripened red jalapeno chili garlic hot sauce
+Bertolli Extra Virgin Olive Oil 500ml,BERT-EVOO-500,Pantry,Bertolli,bottle,7.20,4.50,USD,885000100075,1,1,1,Cold-pressed Mediterranean extra virgin olive oil
+Naturel Pure Canola Oil 1L,NAT-CANOLA-1L,Pantry,Naturel,bottle,3.80,2.30,USD,885000100076,1,1,1,Healthy cholesterol-free high heat cooking oil
+Morton Iodized Table Salt 737g,MORT-SALT-737,Pantry,Morton,can,1.40,0.70,USD,885000100077,1,1,1,Fine grain pure iodized table seasoning salt
+McCormick Ground Black Pepper 85g,MCC-BPEP-85,Pantry,McCormick,bottle,2.90,1.50,USD,885000100078,1,1,1,Coarse ground pungent black peppercorns
+Skippy Creamy Peanut Butter 462g,SKIPPY-CRM-462,Pantry,Skippy,jar,4.20,2.40,USD,885000100079,1,1,1,Smooth velvety roasted peanut spread
+Nutella Hazelnut Cocoa Spread 350g,NUTELLA-350,Pantry,Ferrero,jar,4.50,2.60,USD,885000100080,1,1,1,Creamy hazelnut and cocoa breakfast spread
+Colgate Total Whitening Toothpaste 150g,COLG-TOT-150,Personal Care,Colgate,tube,2.90,1.50,USD,885000100081,1,1,1,Antibacterial 12-hour whole mouth protection
+Sensodyne Rapid Relief Toothpaste 100g,SENSO-RAP-100,Personal Care,Sensodyne,tube,4.20,2.40,USD,885000100082,1,1,1,Fast tooth sensitivity ache relief formula
+Oral-B Complete Soft Toothbrush 2-Pack,ORALB-TB-2P,Personal Care,Oral-B,pack,2.50,1.20,USD,885000100083,1,1,1,Multi-angle soft bristle manual toothbrush
+Listerine Cool Mint Mouthwash 500ml,LIST-MINT-500,Personal Care,Listerine,bottle,4.60,2.60,USD,885000100084,1,1,1,Antiseptic germ-killing deep clean rinse
+Dove Deep Moisture Body Wash 500ml,DOVE-BW-500,Personal Care,Dove,bottle,5.50,3.20,USD,885000100085,1,1,1,Micro-moisture nourishing creamy shower gel
+Dove White Beauty Bar Soap 2x100g,DOVE-SOAP-2P,Personal Care,Dove,pack,2.40,1.20,USD,885000100086,1,1,1,1/4 moisturizing cream cleansing soap bar
+Pantene Pro-V Smooth Shampoo 400ml,PANT-SHMP-400,Personal Care,Pantene,bottle,4.80,2.70,USD,885000100087,1,1,1,Anti-frizz nutrient-infused daily hair wash
+Head & Shoulders Cool Menthol 400ml,HS-MENTH-400,Personal Care,Head & Shoulders,bottle,5.20,3.00,USD,885000100088,1,1,1,Zinc pyrithione anti-dandruff cooling scalp care
+Nivea Men Fresh Active Deodorant 150ml,NIV-MEN-150,Personal Care,Nivea,can,3.80,2.10,USD,885000100089,1,1,1,48-hour ocean extract anti-perspirant body spray
+Gillette Blue 3 Disposable Razors 4s,GIL-BLU3-4P,Personal Care,Gillette,pack,3.60,1.90,USD,885000100090,1,1,1,Triple chromium blade pivoting head razors
+Tide Original Liquid Laundry Detergent 1.36L,TIDE-LIQ-136,Household,Tide,bottle,9.80,6.00,USD,885000100091,1,1,1,High efficiency stain removal concentrated detergent
+Ariel Sunrise Fresh Laundry Powder 1kg,ARIEL-POW-1K,Household,Ariel,bag,3.90,2.20,USD,885000100092,1,1,1,Deep cleaning powder with long lasting freshness
+Downy Floral Romance Fabric Softener 1L,DOWNY-FLR-1L,Household,Downy,bottle,4.50,2.60,USD,885000100093,1,1,1,Ultra fabric conditioning static reducer
+Sunlight Lemon Dishwashing Liquid 750ml,SUN-DISH-750,Household,Sunlight,bottle,2.20,1.10,USD,885000100094,1,1,1,Real lime extract grease-cutting dish soap
+Mr Muscle All-Purpose Cleaner 1L,MRM-CLN-1L,Household,Mr Muscle,bottle,3.40,1.80,USD,885000100095,1,1,1,Multi-surface disinfectant floor and kitchen cleaner
+Clorox Bleach Regular 1L,CLOR-BLCH-1L,Household,Clorox,bottle,2.60,1.30,USD,885000100096,1,1,1,Disinfecting germicidal household chlorine bleach
+Scotch-Brite Heavy Duty Scrub Sponges 3s,SCOTCH-SPG-3P,Household,3M,pack,2.50,1.20,USD,885000100097,1,1,1,Tough scouring antibacterial scrubbing pads
+Kleenex Facial Tissues 2-Ply 3x100s,KLNX-TISS-3P,Household,Kleenex,box,3.20,1.70,USD,885000100098,1,1,1,Ultra soft absorbent gentle facial tissues
+Scott Kitchen Paper Towels 2 Rolls,SCOTT-TWL-2R,Household,Scott,pack,2.80,1.40,USD,885000100099,1,1,1,Thick absorbent textured kitchen cleaning towels
+Glad Trash Bags Drawstring 50L 20s,GLAD-TRSH-20,Household,Glad,box,4.50,2.50,USD,885000100100,1,1,1,Reinforced tear-resistant heavy duty garbage bags

@@ -48,9 +48,26 @@ return [
         'version' => env('API_VERSION', '1.0.0'),
 
         /*
-         * Description rendered on the home page of the API documentation (`/docs/api`).
+         * Description rendered on the home page of the API documentation (`/docs/products`).
          */
-        'description' => 'SmartPOS Product Service API (:8003) for managing product master data, categories, brands, units, variants, barcodes/QR codes, prices, images, and label printing.',
+        'description' => '
+# SmartPOS Product Service
+
+Product Catalog, Pricing, Barcode & Label Printing API for SmartPOS.
+
+## Process Documentation & Architecture Reports
+
+- 📖 **[PRODUCT_SERVICE_PROCESS_REPORT.md](https://smartpos-api.servicefixit.me/api/v1/PRODUCT_SERVICE_PROCESS_REPORT.md)**
+
+## Features
+
+- Categories (Hierarchical parent-child taxonomy)
+- Brands & Measurement Units
+- Products & Multi-Attribute Variants
+- Dynamic 1D Barcodes & 2D QR Code Generation
+- Multi-Currency Pricing Windows
+- Sticker Label Templates & Print Audit Logging
+        ',
     ],
 
     'ui' => [
@@ -103,7 +120,26 @@ return [
      * ],
      * ```
      */
-    'servers' => null,
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAPI Server
+    |--------------------------------------------------------------------------
+    |
+    | Force HTTPS because production is behind Nginx/OpenResty.
+    | This prevents Scramble from generating:
+    |
+    | http://smartpos-api.servicefixit.me/api/v1
+    |
+    */
+    'servers' => env('APP_ENV') === 'production'
+        ? [
+            'Production' => env('SCRAMBLE_SERVER_PROD', 'https://smartpos-api.servicefixit.me/api'),
+        ]
+        : [
+            'Local' => rtrim(env('APP_URL', 'http://api.smartpos.test'), '/') . '/api',
+            'Local (Gateway)' => 'http://localhost:8000/api',
+            'Production' => env('SCRAMBLE_SERVER_PROD', 'https://smartpos-api.servicefixit.me/api'),
+        ],
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.

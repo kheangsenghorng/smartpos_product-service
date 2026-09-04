@@ -1,0 +1,227 @@
+services:
+
+  # ==========================================
+  # Product Laravel Service (:8003 -> :8000)
+  # Production container without host source volume mounts
+  # ==========================================
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: smartpos-product-service
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+
+    ports:
+      # Bound strictly to 127.0.0.1 for VPS host health check & debugging
+      - "127.0.0.1:8003:8000"
+
+    volumes:
+      # Persistent application logs
+      - product-logs:/var/www/html/storage/logs
+      - /opt/smartpos/secrets/identity-jwt:/run/secrets/identity-jwt:ro
+
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+      product-redis:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/up || curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+    networks:
+      product-network:
+      product-smartpos-network:
+        aliases:
+          - product-service
+
+  # ==========================================
+  # Product Queue Worker (Production)
+  # ==========================================
+  product-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: smartpos-product-worker
+
+    restart: unless-stopped
+
+    command: php artisan queue:work --tries=3 --timeout=120
+
+    env_file:
+      - .env
+
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+
+    volumes:
+      - product-logs:/var/www/html/storage/logs
+      - /opt/smartpos/secrets/identity-jwt:/run/secrets/identity-jwt:ro
+
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+      product-redis:
+        condition: service_healthy
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+    networks:
+      product-network:
+      product-smartpos-network:
+
+  # ==========================================
+  # Product MySQL (:3309 -> :3306)
+  # ==========================================
+  product-mysql:
+    image: mysql:8.4
+
+    container_name: smartpos-product-mysql
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-smartpos_product}
+      MYSQL_USER: ${DB_USERNAME:-smartpos}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    volumes:
+      - product-mysql-data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+    networks:
+      product-network:
+        aliases:
+          - mysql
+          - product-mysql
+
+  # ==========================================
+  # Product Redis (:6382 -> :6379)
+  # ==========================================
+  product-redis:
+    image: redis:8-alpine
+
+    container_name: smartpos-product-redis
+
+    restart: unless-stopped
+
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+
+    volumes:
+      - product-redis-data:/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      product-network:
+        aliases:
+          - redis
+          - product-redis
+
+  # ==========================================
+  # Product phpMyAdmin (:8083 -> :80)
+  # Profile "tools": disabled in production by default
+  # Start only on demand with: docker compose --profile tools up -d
+  # ==========================================
+  product-phpmyadmin:
+    image: phpmyadmin:5
+
+    container_name: smartpos-product-phpmyadmin
+
+    restart: unless-stopped
+
+    profiles:
+      - tools
+
+    ports:
+      - "127.0.0.1:8083:80"
+
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+
+    networks:
+      - product-network
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  product-network:
+    driver: bridge
+
+  product-smartpos-network:
+    name: smartpos-network
+    external: true
+
+# ==========================================
+# Persistent Production Volumes
+# ==========================================
+volumes:
+  product-mysql-data:
+  product-redis-data:
+  product-logs:

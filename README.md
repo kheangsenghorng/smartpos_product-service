@@ -55,6 +55,16 @@ The **SmartPOS Product Service** is a high-performance microservice that manages
 | Module | Method | Route | Description |
 | :--- | :--- | :--- | :--- |
 | **Health** | `GET` | `/api/health` | Service health status check |
+| **POS Scan** | `GET` | `/api/v1/products/scan/{code}` | Low-latency barcode/QR/SKU checkout scanner |
+| **Trash & Restore** | `GET` | `/api/v1/products/trash`, `/api/v1/categories/trash` | Soft delete trash bin view |
+| | `POST` | `/api/v1/products/{id}/restore`, `/api/v1/categories/{id}/restore` | Restore soft-deleted item |
+| | `DELETE` | `/api/v1/products/{id}/force`, `/api/v1/categories/{id}/force` | Permanent force deletion & S3 image cleanup |
+| **Bulk Import/Export**| `POST` | `/api/v1/products/import` | Bulk CSV import (`?validate_only=1`, `?async=1`) |
+| | `GET` | `/api/v1/products/export` | Download product catalog as CSV |
+| **Catalog Reports** | `GET` | `/api/v1/products/reports/summary` | Real-time catalog statistical metrics |
+| | `POST` | `/api/v1/products/reports/generate` | Dispatch background catalog report queue job |
+| | `GET` | `/api/v1/products/reports` | List generated catalog reports |
+| | `GET` | `/api/v1/products/reports/{id}/download` | Download completed report file (CSV/JSON) |
 | **Products** | `GET / POST` | `/api/v1/products` | List and create products |
 | | `GET / PUT / DELETE` | `/api/v1/products/{id}` | Show, update, or delete a product |
 | **Variants** | `GET / POST` | `/api/v1/products/{id}/variants` | List or create variants |
@@ -64,6 +74,8 @@ The **SmartPOS Product Service** is a high-performance microservice that manages
 | **Images** | `GET / POST` | `/api/v1/products/{id}/images` | Upload and order product images |
 | **Labels** | `POST` | `/api/v1/products/{id}/labels/preview` | Preview sticker layout and SVG |
 | | `POST` | `/api/v1/products/{id}/labels/print` | Dispatch print job and create audit log |
+| | `GET` | `/api/v1/label-templates/logs` | Paginated label print audit logs |
+| | `POST` | `/api/v1/label-templates/logs/{id}/reprint` | Re-dispatch label print job |
 | **Templates** | `GET / POST / PUT` | `/api/v1/label-templates` | CRUD for sticker templates |
 | **Categories**| `GET / POST / PUT` | `/api/v1/categories` | Hierarchical category management |
 | **Brands & Units** | `GET / POST / PUT` | `/api/v1/brands`, `/api/v1/units` | Brand and Unit registry |
@@ -127,16 +139,19 @@ Content-Type: application/json
 ## 🐳 Docker Setup
 
 ```bash
-# Start Product Service and database containers
-docker compose up -d --build product-service
+# Start Product Service in development mode
+docker compose up -d --build
+
+# Start Product Service in production mode (hardened, no host mounts, log rotation)
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ### Container Port Mapping:
-- **Product API Service**: `http://localhost:8003`
+- **Product API Service**: `http://localhost:8003` (exposed on localhost / API Gateway)
 - **Interactive OpenAPI Docs (Scramble)**: `http://localhost:8003/docs/products`
 - **MySQL Database**: Port `3309` (internal `3306`), database `smartpos_product`
 - **Redis Cache**: Port `6382` (internal `6379`)
-- **phpMyAdmin**: `http://localhost:8083`
+- **phpMyAdmin (Dev/Debug only)**: `http://localhost:8083` (launch with `--profile tools` in prod)
 
 ---
 
@@ -172,6 +187,6 @@ DB_CONNECTION=sqlite DB_DATABASE=:memory: ./vendor/bin/phpunit --testdox
 docker exec smartpos-product-service-1 php artisan test
 ```
 
-**Current Test Status**: 🟢 **68 tests, 253 assertions, 0 failures, 100% pass rate**.
+**Current Test Status**: 🟢 **91 tests, 368 assertions, 0 failures, 100% pass rate**.
 
 For the full security and penetration test report, see [SECURITY_TESTING_REPORT.md](SECURITY_TESTING_REPORT.md).

@@ -27,6 +27,7 @@ class SecurityHeadersMiddleware
         'morfeus',
         'nessus',
         'arachni',
+        'wfuzz',
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -58,7 +59,9 @@ class SecurityHeadersMiddleware
             $response->headers->set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none';");
         }
 
-        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        $response->headers->set('Permissions-Policy', 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()');
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
 
         return $response;
     }

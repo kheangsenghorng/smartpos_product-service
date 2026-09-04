@@ -13,7 +13,41 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // 📋 Custom Failed Job Provider: atomically inserts tenant metadata & error summary
+        $this->app->extend('queue.failer', function ($service, $app) {
+            $config = $app['config']['queue.failed'] ?? [];
+
+            return new class(
+                $app['db'],
+                $config['database'] ?? null,
+                $config['table'] ?? 'failed_jobs'
+            ) extends \Illuminate\Queue\Failed\DatabaseUuidFailedJobProvider {
+                public function log($connection, $queue, $payload, $exception)
+                {
+                    $data = json_decode($payload, true);
+                    $displayName = $data['displayName'] ?? null;
+                    $command = isset($data['data']['command']) ? @unserialize($data['data']['command']) : null;
+                    $businessUuid = $command->businessUuid ?? ($command->report->business_uuid ?? null);
+                    $errorSummary = \Illuminate\Support\Str::limit($exception->getMessage(), 500);
+
+                    $id = (string) \Illuminate\Support\Str::uuid();
+
+                    $this->getTable()->insert([
+                        'uuid' => $id,
+                        'connection' => $connection,
+                        'queue' => $queue,
+                        'business_uuid' => $businessUuid,
+                        'job_name' => $displayName,
+                        'payload' => $payload,
+                        'exception' => (string) $exception,
+                        'error_summary' => $errorSummary,
+                        'failed_at' => \Illuminate\Support\Facades\Date::now(),
+                    ]);
+
+                    return $id;
+                }
+            };
+        });
     }
 
     /**
@@ -84,5 +118,8 @@ class AppServiceProvider extends ServiceProvider
                 ], 429);
             });
         });
+
+        // 🔄 Observers for POS cache invalidation
+        \App\Models\Product::observe(\App\Observers\ProductObserver::class);
     }
 }

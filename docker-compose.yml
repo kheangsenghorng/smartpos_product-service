@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
 
     ports:
-      - "8003:8000"
+      - "127.0.0.1:8003:8000"
 
     volumes:
       - .:/var/www/html
@@ -23,6 +23,28 @@ services:
 
     restart: unless-stopped
 
+    networks:
+      - product-network
+      - product-smartpos-network
+
+  # ==========================================
+  # Product Queue Worker
+  # ==========================================
+  product-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php artisan queue:work --tries=3 --timeout=3600
+    tty: true
+    volumes:
+      - .:/var/www/html
+      - product-vendor:/var/www/html/vendor
+    depends_on:
+      product-mysql:
+        condition: service_healthy
+      product-redis:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - product-network
       - product-smartpos-network
