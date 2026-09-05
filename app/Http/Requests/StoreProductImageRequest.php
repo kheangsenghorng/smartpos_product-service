@@ -25,6 +25,7 @@ class StoreProductImageRequest extends FormRequest
             ],
             'image' => ['nullable', 'file', 'image', 'mimes:webp,png,jpg,jpeg,svg,gif,bmp,avif', 'max:10240'],
             'alt_text' => ['nullable', 'string', 'max:255'],
+            'disk' => ['nullable', 'string', 'max:50'],
             'sort_order' => ['nullable', 'integer'],
             'is_primary' => ['nullable', 'boolean'],
         ];

@@ -46,9 +46,11 @@ class ProductImageController extends Controller
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $this->imageService->upload($request->file('image'), 'products');
+            $data['disk'] = $data['disk'] ?? $this->imageService->disk();
             unset($data['image']);
         } elseif ($request->hasFile('image_path')) {
             $data['image_path'] = $this->imageService->upload($request->file('image_path'), 'products');
+            $data['disk'] = $data['disk'] ?? $this->imageService->disk();
         }
 
         $image = ProductImage::create(array_merge($data, [

@@ -1,12 +1,12 @@
 # SmartPOS Product Service — Comprehensive Codebase, Security & Verification Report
 
 **Service Name**: `smartpos-product-service`  
-**Host Port**: `:8003` (Gateway routing via `http://api.smartpos.test/api/v1/products`)  
-**Framework**: Laravel 13 / PHP 8.4  
-**Database**: MySQL 8.4 (`smartpos_product`) & Redis 8  
+**Host Port**: `:8003` (FastCGI routing via API Gateway `http://api.smartpos.test/api/v1/products`)  
+**Runtime**: PHP 8.4-FPM with OPcache JIT (Tracing Mode)  
+**Database**: MySQL 8.4 (`smartpos_product`) & Redis 8 Cache  
 **Authentication**: RS256 Asymmetric JWT Verification (`jwt.auth`)  
-**Queue Subsystem**: Background Worker (`smartpos-product-worker-1`) with Database Queue  
-**Last Verified**: September 4, 2026  
+**Queue Subsystem**: Background Worker (`smartpos-product-worker-1`) on Redis Queue  
+**Last Verified**: September 5, 2026  
 
 ---
 
@@ -130,12 +130,12 @@ Live HTTP requests were executed against the running microservices via API Gatew
 
 ```text
 CONTAINER NAME                STATUS                   INTERNAL PORT / ROUTING
-smartpos-api-gateway          Up (Healthy)             :8000 -> Reverse Proxy
+smartpos-api-gateway          Up (Healthy)             :8000 -> FastCGI Reverse Proxy (Gzip L6)
 smartpos-nginx-proxy-manager  Up                       :80 / :443 -> Domain Ingress (api.smartpos.test)
-smartpos-product-service-1    Up                       :8003 -> PHP 8.4 Laravel Web Engine
-smartpos-product-worker-1     Up                       Queue Worker (timeout=3600s, tty=true)
+smartpos-product-service-1    Up                       :8003 (FastCGI :9000) -> PHP 8.4-FPM (OPcache JIT)
+smartpos-product-worker-1     Up                       Queue Worker on Redis (timeout=3600s)
 smartpos-product-mysql-1      Up (Healthy)             :3309 -> MySQL 8.4 Catalog Database
-smartpos-product-redis-1      Up (Healthy)             :6382 -> Redis 8 Scan Cache & Locks
+smartpos-product-redis-1      Up (Healthy)             :6382 -> Redis 8 Scan Cache (0.51ms) & Locks
 smartpos-minio                Up (Healthy)             :9000 / :9001 -> S3 Media Storage
 ```
 
