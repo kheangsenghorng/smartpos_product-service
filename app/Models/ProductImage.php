@@ -18,6 +18,7 @@ class ProductImage extends Model
         'product_id',
         'product_variant_id',
         'image_path',
+        'disk',
         'alt_text',
         'sort_order',
         'is_primary',
@@ -53,7 +54,9 @@ class ProductImage extends Model
             return $this->image_path;
         }
 
-        return Storage::disk(config('filesystems.default', 'public'))->url($this->image_path);
+        $disk = $this->disk ?: config('filesystems.default', 'public');
+
+        return Storage::disk($disk)->url($this->image_path);
     }
 
     public function product(): BelongsTo

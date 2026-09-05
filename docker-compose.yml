@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
 
     ports:
-      - "127.0.0.1:8003:8000"
+      - "127.0.0.1:8003:9000"
 
     volumes:
       - .:/var/www/html
