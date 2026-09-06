@@ -17,27 +17,42 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Verify SSH Connection
+      - name: Prepare and Sanitize SSH Config
+        id: sanitize
         env:
           HOST: ${{ secrets.VPS_HOST }}
           USER: ${{ secrets.VPS_USERNAME }}
           PORT: ${{ secrets.VPS_SSH_PORT }}
+        run: |
+          CLEAN_HOST=$(echo "$HOST" | tr -d '"'\'' \r\n\t')
+          CLEAN_USER=$(echo "$USER" | tr -d '"'\'' \r\n\t')
+          CLEAN_PORT=$(echo "$PORT" | tr -d '"'\'' \r\n\t')
+          [ -z "$CLEAN_PORT" ] && CLEAN_PORT="22"
+          echo "host=${CLEAN_HOST}" >> "$GITHUB_OUTPUT"
+          echo "username=${CLEAN_USER}" >> "$GITHUB_OUTPUT"
+          echo "port=${CLEAN_PORT}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify SSH Connection
+        env:
+          HOST: ${{ steps.sanitize.outputs.host }}
+          USER: ${{ steps.sanitize.outputs.username }}
+          PORT: ${{ steps.sanitize.outputs.port }}
           KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
-          echo "Testing SSH connectivity to $USER@$HOST:${PORT:-22}..."
+          echo "Testing SSH connectivity to $USER@$HOST:$PORT..."
           mkdir -p ~/.ssh
           printf '%s\n' "$KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh -i ~/.ssh/deploy_key -p "${PORT:-22}" -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=10 "$USER@$HOST" "echo '✅ SSH Connection Verified for user:' \$(whoami)"
+          ssh -i ~/.ssh/deploy_key -p "$PORT" -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=10 "$USER@$HOST" "echo '✅ SSH Connection Verified for user:' \$(whoami)"
           rm -f ~/.ssh/deploy_key
 
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          host: ${{ steps.sanitize.outputs.host }}
+          username: ${{ steps.sanitize.outputs.username }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_SSH_PORT }}
+          port: ${{ steps.sanitize.outputs.port }}
           script_stop: true
           command_timeout: 15m
           script: |
