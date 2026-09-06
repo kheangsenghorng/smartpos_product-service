@@ -11,6 +11,8 @@ jobs:
   deploy:
     name: Deploy to Production VPS
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,33 +25,42 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_SSH_PORT || 22 }}
           script_stop: true
+          command_timeout: 15m
           script: |
             echo "=============================================="
             echo "🚀 Starting Automated Deployment: Product Service"
             echo "=============================================="
-            
-            # Navigate to workspace
+
+            # Locate SmartPOS directory
+            TARGET_DIR=""
             if [ -d "/var/www/smartpos" ]; then
-              cd /var/www/smartpos
-              
+              TARGET_DIR="/var/www/smartpos"
+            elif [ -d "/opt/smartpos" ]; then
+              TARGET_DIR="/opt/smartpos"
+            fi
+
+            if [ -n "$TARGET_DIR" ]; then
+              cd "$TARGET_DIR"
+
               # If central deploy.sh exists, use it
               if [ -f "deploy.sh" ]; then
                 chmod +x deploy.sh
                 ./deploy.sh product
-              else
+              elif [ -d "product-service" ]; then
                 cd product-service
-                git pull origin main || git pull origin master
+                git fetch origin main || git fetch origin master || true
+                git pull origin main || git pull origin master || true
                 COMPOSE_FILE="docker-compose.yml"
                 [ -f "docker-compose.prod.yml" ] && COMPOSE_FILE="docker-compose.prod.yml"
-                docker compose -f "${COMPOSE_FILE}" up -d --build
+                docker compose -f "${COMPOSE_FILE}" up -d --build product-service
                 docker compose -f "${COMPOSE_FILE}" exec -T product-service php artisan migrate --force
                 docker compose -f "${COMPOSE_FILE}" exec -T product-service php artisan optimize
               fi
             else
-              echo "❌ Error: /var/www/smartpos directory not found on VPS."
+              echo "❌ Error: SmartPOS directory not found on VPS (/var/www/smartpos or /opt/smartpos)."
               exit 1
             fi
-            
+
             echo "=============================================="
             echo "✅ Product Service Deployment Completed!"
             echo "=============================================="
