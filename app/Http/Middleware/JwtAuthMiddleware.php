@@ -86,12 +86,16 @@ class JwtAuthMiddleware
         }
 
         $publicKey = config('jwt.public_key');
-        if (is_string($publicKey) && str_starts_with($publicKey, 'file://')) {
-            $keyPath = substr($publicKey, 7);
-            if (! str_starts_with($keyPath, '/') && function_exists('base_path')) {
-                $keyPath = base_path($keyPath);
+        if (is_string($publicKey)) {
+            if (str_starts_with($publicKey, 'file://')) {
+                $keyPath = substr($publicKey, 7);
+                if (! str_starts_with($keyPath, '/') && function_exists('base_path')) {
+                    $keyPath = base_path($keyPath);
+                }
+                $publicKey = file_exists($keyPath) ? file_get_contents($keyPath) : null;
+            } elseif (file_exists($publicKey)) {
+                $publicKey = file_get_contents($publicKey);
             }
-            $publicKey = file_exists($keyPath) ? file_get_contents($keyPath) : null;
         }
 
         $secret = config('jwt.secret');

@@ -17,6 +17,15 @@ Route::get('/health', function () {
     ]);
 });
 
+Route::get('/product/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'service' => 'smartpos-product-service',
+        'port' => 8003,
+        'timestamp' => now()->toIso8601String(),
+    ]);
+});
+
 Route::prefix('v1')->group(function () {
     // Process Report Documentation (Protected by jwt.auth)
     Route::middleware(['throttle:api', 'jwt.auth'])->get('/PRODUCT_SERVICE_PROCESS_REPORT.md', function () {

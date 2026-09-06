@@ -10,5 +10,14 @@ mkdir -p /var/www/html/storage/framework/cache/data \
 
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
 
+# Optimize application for web service execution
+if [ "$1" = "php-fpm" ]; then
+    php artisan config:clear || true
+    php artisan cache:clear || true
+    php artisan route:clear || true
+    php artisan view:clear || true
+    php artisan optimize || true
+fi
+
 # Execute passed container command
 exec "$@"

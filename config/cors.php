@@ -50,27 +50,16 @@ return [
 
     'allowed_origins_patterns' => [
         '#^https?://(api|admin|pos|app)\.smartpos\.test(:[0-9]+)?$#',
+        '#^https?://.*\.servicefixit\.me(:[0-9]+)?$#',
         '#^https?://.*\.ngrok(-free)?\.app$#',
         '#^https?://.*\.ngrok\.io$#',
         '#^https?://localhost:(80|8000|8080|8001|8002|8003|3000|3001|5173)$#',
         '#^https?://127\.0\.0\.1:(80|8000|8080|8001|8002|8003|3000|3001|5173)$#',
     ],
 
-    'allowed_headers' => [
-        'Accept',
-        'Authorization',
-        'Content-Type',
-        'Origin',
-        'X-Requested-With',
-        'X-User-Uuid',
-        'X-Device-Uuid',
-    ],
+    'allowed_headers' => ['*'],
 
-    'exposed_headers' => [
-        'Retry-After',
-        'X-RateLimit-Limit',
-        'X-RateLimit-Remaining',
-    ],
+    'exposed_headers' => ['*'],
 
     'max_age' => 86400,
 

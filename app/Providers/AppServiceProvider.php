@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Dedoc\Scramble\Scramble;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -78,6 +79,10 @@ class AppServiceProvider extends ServiceProvider
                 || in_array('super_admin', $roles, true)
                 || in_array('superadmin', $roles, true)
                 || !empty($payload['is_admin']);
+        });
+
+        Gate::define('viewApiDocs', function ($user = null) {
+            return true;
         });
 
         Scramble::configure()

@@ -74,8 +74,7 @@ Product Catalog, Pricing, Barcode & Label Printing API for SmartPOS.
         'title' => 'SmartPOS Product Service API',
     ],
 
-    // 'renderer' => 'elements',
-     'renderer' => 'scalar',
+    'renderer' => 'elements',
 
     'renderers' => [
         /*
