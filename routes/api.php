@@ -17,16 +17,17 @@ Route::get('/health', function () {
     ]);
 });
 
-Route::get('/product/health', function () {
-    return response()->json([
-        'status' => 'healthy',
-        'service' => 'smartpos-product-service',
-        'port' => 8003,
-        'timestamp' => now()->toIso8601String(),
-    ]);
-});
-
 Route::prefix('v1')->group(function () {
+    // Service Health Check
+    Route::get('/product/health', function () {
+        return response()->json([
+            'status' => 'ok',
+            'service' => 'smartpos-product-service',
+            'version' => '1.0.0',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
+
     // Process Report Documentation (Protected by jwt.auth)
     Route::middleware(['throttle:api', 'jwt.auth'])->get('/PRODUCT_SERVICE_PROCESS_REPORT.md', function () {
         $path = base_path('PRODUCT_SERVICE_PROCESS_REPORT.md');
