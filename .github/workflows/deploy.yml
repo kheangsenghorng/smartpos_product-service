@@ -78,6 +78,14 @@ jobs:
             git fetch origin ${{ github.ref_name }} || git fetch origin master || true
             git reset --hard origin/${{ github.ref_name }} || git reset --hard origin/master || true
 
+            # Ensure Scout environment variables are configured in VPS .env
+            if [ -f ".env" ]; then
+              echo "⚙️ Ensuring Scout variables in VPS .env"
+              grep -q "^SCOUT_DRIVER=" .env && sed -i 's/^SCOUT_DRIVER=.*/SCOUT_DRIVER=database/' .env || echo "SCOUT_DRIVER=database" >> .env
+              grep -q "^SCOUT_QUEUE=" .env && sed -i 's/^SCOUT_QUEUE=.*/SCOUT_QUEUE=true/' .env || echo "SCOUT_QUEUE=true" >> .env
+              grep -q "^SCOUT_PREFIX=" .env && sed -i 's/^SCOUT_PREFIX=.*/SCOUT_PREFIX=smartpos_local_/' .env || echo "SCOUT_PREFIX=smartpos_local_" >> .env
+            fi
+
             COMPOSE_FILE="docker-compose.yml"
             [ -f "docker-compose.prod.yml" ] && COMPOSE_FILE="docker-compose.prod.yml"
             echo "🐳 Using compose file: ${COMPOSE_FILE}"
