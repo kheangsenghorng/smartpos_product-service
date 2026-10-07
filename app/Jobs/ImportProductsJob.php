@@ -36,7 +36,9 @@ class ImportProductsJob implements ShouldQueue
 
         try {
             $disk = config('filesystems.default', 'public');
-            $content = Storage::disk($disk)->get($this->tempFilePath);
+            $content = Storage::disk($disk)->exists($this->tempFilePath)
+                ? Storage::disk($disk)->get($this->tempFilePath)
+                : (Storage::disk('public')->exists($this->tempFilePath) ? Storage::disk('public')->get($this->tempFilePath) : null);
 
             if (!$content) {
                 throw new \RuntimeException("Could not read uploaded import file at: {$this->tempFilePath}");

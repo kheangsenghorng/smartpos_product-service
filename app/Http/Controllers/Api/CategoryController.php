@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\ImageUploadService;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,10 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories with optional tree view, filters, and pagination.
      */
+    #[QueryParameter('search', description: 'Filter categories by name or code (partial search).', type: 'string', required: false)]
+    #[QueryParameter('is_active', description: 'Filter categories by active status.', type: 'boolean', required: false)]
+    #[QueryParameter('tree', description: 'Return categories in hierarchical tree view with children.', type: 'boolean', required: false)]
+    #[QueryParameter('per_page', description: 'Number of categories to return per page (default: 20, max: 100).', type: 'integer', default: 20, required: false)]
     public function index(Request $request): JsonResponse
     {
         $isAdmin = $this->isGlobalAdmin($request);
@@ -31,7 +36,7 @@ class CategoryController extends Controller
         } elseif (!$isAdmin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Business context is required.',
+                'message' => 'Business context is required. Please provide business_uuid in the request body, X-Business-Uuid header, or JWT token.',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 

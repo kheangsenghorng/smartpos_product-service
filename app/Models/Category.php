@@ -48,6 +48,18 @@ class Category extends Model
         });
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    public function resolveRouteBinding($value, $field = null): ?Model
+    {
+        return $this->where('uuid', $value)
+            ->orWhere('id', $value)
+            ->first();
+    }
+
     public function getImageUrlAttribute(): ?string
     {
         if (empty($this->image_path)) {

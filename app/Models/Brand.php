@@ -43,6 +43,18 @@ class Brand extends Model
         });
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    public function resolveRouteBinding($value, $field = null): ?Model
+    {
+        return $this->where('uuid', $value)
+            ->orWhere('id', $value)
+            ->firstOrFail();
+    }
+
     public function getLogoUrlAttribute(): ?string
     {
         if (empty($this->logo_path)) {

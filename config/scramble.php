@@ -181,7 +181,9 @@ Product Catalog, Pricing, Barcode & Label Printing API for SmartPOS.
         RestrictedDocsAccess::class,
     ],
 
-    'extensions' => [],
+    'extensions' => [
+        \App\Support\Scramble\BusinessUuidHeaderExtension::class,
+    ],
 
     /*
      * Automatically document API security (OpenAPI `security` / `securitySchemes`) based on route

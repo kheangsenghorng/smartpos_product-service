@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
 use App\Services\ImageUploadService;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +22,9 @@ class BrandController extends Controller
      * Display a listing of brands with optional search and active status filters.
      * Admins can view all brands across businesses or filter by specific business_uuid.
      */
+    #[QueryParameter('search', description: 'Filter brands by name or code (partial search).', type: 'string', required: false)]
+    #[QueryParameter('is_active', description: 'Filter brands by active status.', type: 'boolean', required: false)]
+    #[QueryParameter('per_page', description: 'Number of brands to return per page (default: 20, max: 100).', type: 'integer', default: 20, required: false)]
     public function index(Request $request): JsonResponse
     {
         $isAdmin = $this->isGlobalAdmin($request);
@@ -34,7 +38,7 @@ class BrandController extends Controller
         } elseif (!$isAdmin) {
             return response()->json([
                 'success' => false,
-                'message' => 'Business context is required. Please provide business_uuid in the request or token.',
+                'message' => 'Business context is required. Please provide business_uuid in the request body, X-Business-Uuid header, or JWT token.',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
