@@ -12,10 +12,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = [
         'uuid',
@@ -167,5 +168,34 @@ class Product extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'uuid' => (string) $this->uuid,
+            'business_uuid' => (string) $this->business_uuid,
+            'name' => (string) $this->name,
+            'sku' => (string) $this->sku,
+            'slug' => (string) ($this->slug ?? ''),
+            'description' => (string) ($this->description ?? ''),
+            'category_id' => $this->category_id ? (int) $this->category_id : null,
+            'brand_id' => $this->brand_id ? (int) $this->brand_id : null,
+            'is_active' => (bool) $this->is_active,
+        ];
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return is_null($this->deleted_at);
     }
 }

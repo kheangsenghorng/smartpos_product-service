@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
 
 class Unit extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'uuid',
@@ -44,5 +45,23 @@ class Unit extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'unit_id');
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'uuid' => (string) $this->uuid,
+            'business_uuid' => (string) $this->business_uuid,
+            'name' => (string) $this->name,
+            'code' => (string) $this->code,
+            'symbol' => (string) ($this->symbol ?? ''),
+            'is_active' => (bool) $this->is_active,
+        ];
     }
 }
