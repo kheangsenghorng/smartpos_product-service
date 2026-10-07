@@ -48,13 +48,45 @@ class ProductController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhereHas('codes', function ($cq) use ($search) {
-                      $cq->where('code_value', 'like', "%{$search}%");
-                  });
-            });
+            $scoutDriver = config('scout.driver');
+
+            if ($scoutDriver && $scoutDriver !== 'null') {
+                try {
+                    $scoutQuery = Product::search($search);
+                    if ($businessUuid) {
+                        $scoutQuery->where('business_uuid', $businessUuid);
+                    }
+                    $scoutIds = $scoutQuery->keys();
+
+                    if ($scoutIds->isNotEmpty()) {
+                        $query->whereIn('id', $scoutIds);
+                    } else {
+                        $query->where(function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%")
+                              ->orWhere('sku', 'like', "%{$search}%")
+                              ->orWhereHas('codes', function ($cq) use ($search) {
+                                  $cq->where('code_value', 'like', "%{$search}%");
+                              });
+                        });
+                    }
+                } catch (\Throwable) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                          ->orWhere('sku', 'like', "%{$search}%")
+                          ->orWhereHas('codes', function ($cq) use ($search) {
+                              $cq->where('code_value', 'like', "%{$search}%");
+                          });
+                    });
+                }
+            } else {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('sku', 'like', "%{$search}%")
+                      ->orWhereHas('codes', function ($cq) use ($search) {
+                          $cq->where('code_value', 'like', "%{$search}%");
+                      });
+                });
+            }
         }
 
         if ($request->filled('sku')) {
