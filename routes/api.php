@@ -18,8 +18,17 @@ Route::get('/health', function () {
 });
 
 Route::prefix('v1')->group(function () {
-    // Service Health Check
+    // Service Health Check (supports both singular and plural)
     Route::get('/product/health', function () {
+        return response()->json([
+            'status' => 'ok',
+            'service' => 'smartpos-product-service',
+            'version' => '1.0.0',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
+
+    Route::get('/products/health', function () {
         return response()->json([
             'status' => 'ok',
             'service' => 'smartpos-product-service',
