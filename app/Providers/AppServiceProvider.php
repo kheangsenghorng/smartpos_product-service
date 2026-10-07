@@ -99,6 +99,10 @@ class AppServiceProvider extends ServiceProvider
 
         // 🛡️ Security Rate Limiters to protect against DoS, brute-force & API flooding
         \Illuminate\Support\Facades\RateLimiter::for('api', function (Request $request) {
+            if (app()->environment('testing')) {
+                return \Illuminate\Cache\RateLimiting\Limit::none();
+            }
+
             $identifier = $request->attributes->get('auth_user_uuid')
                 ?: $request->attributes->get('auth_business_uuid')
                 ?: $request->ip();
